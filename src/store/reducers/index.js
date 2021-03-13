@@ -7,7 +7,6 @@ const initialState = {
 };
 
 const reducer = (state = initialState, action) => {
-    console.log("action:", action)
     switch(action.type) {
         case Types.DATA_LOADED: {
             return { ...state, items: action.payload}
@@ -43,7 +42,7 @@ const reducer = (state = initialState, action) => {
             if(addedItem.quantity > 1) {
                 addedItem.quantity -= 1;
             }
-            
+
             return {
                 ...state,
                 cart: [...state.cart]

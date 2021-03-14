@@ -1,58 +1,62 @@
-import React, { Component } from 'react'
-import { connect } from 'react-redux';
-import { getData, addToCart } from '../../store/actions/index';
-import Spinner from '../Spinner';
+import React, { useEffect } from 'react'
+import { shallowEqual, useSelector, useDispatch } from 'react-redux'
+import PropTypes from 'prop-types'
+
+import { 
+    getData, 
+    addToCart 
+} from '../../store/actions/index';
+
 import {Bar, Cover} from './Style';
 
-class Catalogue extends Component {
-    componentDidMount() {
-        this.props.getData();
-    }
+const Catalogue = () => {
+  const dispatch = useDispatch()
 
-    addItemsToCart = (item) => {
-        if(this.props.cart.find(cart => cart.id === item.id)) {
-            alert('Item already exists in cart')
-        }
-        else {
-            this.props.addToCart(item)
-        }
-    }
-  
-    render() {
-        const {items, loading,} = this.props;
-        return (
-            <div className="col-md-8 offset-md-2">
-                <Bar>
-                    {items && items.map((item, i) => (
-                        <Cover className="card" key={i}>
-                            <img src={item.img} alt="Denim Jeans" />
-                            <h3>{item.title}</h3>
-                            <p className="price">{item.price}</p>
-                            <p>{item.desc}</p>
-                            <button onClick={() => this.addItemsToCart(item)}>
-                                Add to Cart
-                                </button>
-                    </Cover>
-                    ))}
-                </Bar>
-                
-            </div>
-           
-        )
-    }
-}
-
-function mapStateToProps(state) {
-    return {
+  const { items, cart } = useSelector(
+    (state) => ({
         items: state.items,
-        cart: state.cart,
-        loading: state.loading
+        cart: state.cart
+    }),
+    shallowEqual
+  )
+
+  useEffect(() => {
+    dispatch(getData())
+  }, [dispatch])
+
+  const addItemsToCart = (item) => {
+    if(cart.find(cartItem => cartItem.id === item.id)) {
+        alert('Item already exists in cart')
     }
+    else {
+        dispatch(addToCart(item))
+    }
+  }
+
+  return (
+    <div className="col-md-8 offset-md-2">
+        <Bar>
+            {items.map((item, i) => (
+                <Cover className="card" key={item.id}>
+                    <img src={item.img} alt={item.title} />
+                    <h3>{item.title}</h3>
+                    <p className="price">{item.price}</p>
+                    <p>{item.desc}</p>
+                    <button onClick={() => addItemsToCart(item)}>
+                        Add to Cart
+                        </button>
+            </Cover>
+            ))}
+        </Bar>
+    </div>
+  )
 }
 
-
-export default connect(
-    mapStateToProps, 
-    {getData, addToCart}
-    )
-(Catalogue )
+Catalogue.propTypes = {
+    items: PropTypes.array,
+    cart: PropTypes.array,
+    loading: PropTypes.bool,
+    dispatch: PropTypes.func,
+}
+  
+export default Catalogue

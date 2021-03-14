@@ -1,4 +1,6 @@
 import * as Types from '../constants/action-types'
+import Swal from 'sweetalert2'
+import {get} from './fetch.js'
 
 export const startLoading = () => dispatch => {
     dispatch({
@@ -31,15 +33,16 @@ export const decreaseQuantity = (id) => dispatch => {
 export const getData = () => async(dispatch) => {
     dispatch(startLoading());
     try {
-        const response = await fetch("http://localhost:3000/items");
-        const result = await response.json()
+        const response = await get("items");
+        const result = await response
         dispatch({ type: Types.DATA_LOADED, payload: result });
-        dispatch(stopLoading());
     }
     catch (error) {
-        dispatch(stopLoading());
         alert("Something Went Wrong");
         throw error
+    }
+    finally {
+        dispatch(stopLoading());
     }
    
 }
@@ -57,29 +60,35 @@ export const addToCart = (data) => async(dispatch) => {
         })
         const result = await response.json()
         dispatch({ type: Types.ADD_TO_CART, payload: result });
-        dispatch(stopLoading());
-        alert("Successful!!! Item has been added to cart")
+        Swal.fire(
+            'Success',
+            'Item has been added to cart',
+            'success'
+        )
         dispatch(fetchCartItems());
     }
     catch (error) {
-        dispatch(stopLoading());
         alert("Something Went Wrong");
         throw error
+    }
+    finally {
+        dispatch(stopLoading());
     }
 }
 
 export const fetchCartItems = () => async(dispatch) => {
     dispatch(startLoading());
     try {
-        const response = await fetch("http://localhost:3000/cart");
-        const result = await response.json()
+        const response = await get("cart");
+        const result = await response
         dispatch({ type: Types.FETCH_CART_ITEMS, payload: result });
-        dispatch(stopLoading());
     }
     catch (error) {
-        dispatch(stopLoading());
         alert("Something Went Wrong");
         throw error
+    }
+    finally {
+        dispatch(stopLoading());
     }
    
 }
@@ -92,13 +101,18 @@ export const removeFromCart = (id) => async(dispatch) => {
         })
         const result = await response.json()
         dispatch({ type: Types.REMOVE_FROM_CART, payload: result });
-        dispatch(stopLoading());
-        alert("Successful!!! Item has been removed from cart")
+        Swal.fire(
+            'Success',
+            'Item has been removed from cart',
+            'success'
+        )
         dispatch(fetchCartItems());
     }
     catch (error) {
-        dispatch(stopLoading());
         alert("Something Went Wrong");
         throw error
+    }
+    finally {
+        dispatch(stopLoading());
     }
 }

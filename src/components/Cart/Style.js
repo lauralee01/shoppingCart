@@ -30,4 +30,8 @@ export const Cover = styled.div`
         width: 100%;
         font-size: 18px;
     }
+
+    i.material-icons {
+        cursor: pointer;
+    }
 `;
